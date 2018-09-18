@@ -1,0 +1,754 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head id="Head"><title>
+	学习笔记—四元数与欧拉角之间的转换 - Heath's Blog - C++博客
+</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta id="metaKeywords" name="keywords" content="学习笔记—四元数与欧拉角之间的转换"><link type="text/css" rel="stylesheet" href="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/common.css"><link id="MainCss" type="text/css" rel="stylesheet" href="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/style.css"><link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://www.cppblog.com/heath/rss.aspx"><link rel="preload" href="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/integrator.js" as="script"></head>
+<body>
+    <form name="Form1" method="post" action="103127.html" id="Form1">
+<div>
+<input name="__EVENTTARGET" id="__EVENTTARGET" value="" type="hidden">
+<input name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" type="hidden">
+<input name="__VIEWSTATE" id="
+__VIEWSTATE" value="" type="hidden">
+</div>
+
+<script type="text/javascript" async="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/ga.js"></script><script src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/osd.js"></script><script src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/amp4ads-host-v0.js"></script><script src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/pubads_impl_rendering_246.js"></script><script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['Form1'];
+if (!theForm) {
+    theForm = document.Form1;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/WebResource.js" type="text/javascript"></script>
+
+<script language="JavaScript">
+									function ctlent(evt,id)
+											{
+												if(evt.ctrlKey && evt.keyCode == 13)
+												{	
+													try
+													{
+														TempSave(id);
+													}
+													catch(ex)
+													{
+													}
+													finally
+													{
+													    __doPostBack('AjaxHolder$PostComment$btnSubmit','')
+													}
+												}
+		
+												}</script>
+												<script language="JavaScript">function SetReplyAuhor(author){document.getElementById('AjaxHolder_PostComment_tbComment').value+="@"+author+"\n";document.getElementById('AjaxHolder_PostComment_tbComment').focus();return false}</script>
+<script src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/ScriptResource.js" type="text/javascript"></script>
+<script src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/ScriptResource_002.js" type="text/javascript"></script>
+        
+
+<div id="top">
+
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="http://www.cppblog.com/heath/">Heath's Blog</a></h1>
+<p id="tagline">There is no end, it is just the beginning! - A Game Developer's Notes</p>
+</div>
+<div id="main">
+	
+					
+	<div class="post">
+		<h2>
+			<a id="viewpost1_TitleUrl" href="http://www.cppblog.com/heath/archive/2009/12/13/103127.html">学习笔记—四元数与欧拉角之间的转换</a>
+		</h2>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;在3D图形学中，最常用的旋转表示方法便是四元数和欧拉角，比起矩阵来具有节省存储空间和方便插值的优点。本文主要归纳了两种表达方式的转换，计算公式采用3D笛卡尔坐标系： </p>
+<p style="TEXT-ALIGN: center"><img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_1.png"> </p>
+<p style="TEXT-ALIGN: center">图1 3D Cartesian coordinate System (from wikipedia) </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;定义<img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_2.png">分别为绕Z轴、Y轴、X轴的旋转角度，如果用Tait-Bryan angle表示，分别为Yaw、Pitch、Roll。 </p>
+<p style="TEXT-ALIGN: center"><img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_3.png"> </p>
+<p style="TEXT-ALIGN: center">图2 Tait-Bryan angles (from wikipedia) </p>
+<p>一、四元数的定义 </p>
+<p><img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_4.png"> </p>
+<p>&nbsp;&nbsp;&nbsp;通过旋转轴和绕该轴旋转的角度可以构造一个四元数： </p>
+<p><img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_5.png"> </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;其中<img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_6.png">是绕旋转轴旋转的角度，<img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_7.png">为旋转轴在x,y,z方向的分量（由此确定了旋转轴）。 </p>
+<p>二、欧拉角到四元数的转换 </p>
+<p style="TEXT-ALIGN: center"><img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_8.png"> </p>
+<p>三、四元数到欧拉角的转换 </p>
+<p style="TEXT-ALIGN: center"><img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_9.png"> </p>
+<p><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arctan</em>和<em>arcsin</em>的结果是<img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_10.png">，这并不能覆盖所有朝向(对于<img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_11.png">角<img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_12.png">的取值范围已经满足)，因此需要用<em>atan2</em>来代替<em>arctan</em>。 </p>
+<p style="TEXT-ALIGN: center"><img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_13.png"> </p>
+<p>四、在其他坐标系下使用 </p>
+<p style="MARGIN-LEFT: 21pt">在其他坐标系下，需根据坐标轴的定义，调整一下以上公式。如在Direct3D中，笛卡尔坐标系的X轴变为Z轴，Y轴变为X轴，Z轴变为Y轴（无需考虑方向）。 </p>
+<p style="TEXT-ALIGN: center"><img alt="" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/121309_1044_14.png"> </p>
+<p>五、示例代码 </p>
+<p>&nbsp;<a href="http://www.cppblog.com/Files/heath/Euler2Quaternion.rar">http://www.cppblog.com/Files/heath/Euler2Quaternion.rar</a><br>Demo渲染两个模型，左边使用欧拉角，右边使用四元数，方向键Up、Left、Right旋转模型。</p>
+<h5>参考文献： </h5>
+<h5>[1] http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles </h5>
+<h5>[2] Ken Shoemake, Animating Rotation with Quaternion Curves, 1985</h5>
+
+		<p class="postfoot">
+			posted on 2009-12-13 18:44 <a href="http://www.cppblog.com/heath/">Heath</a> 阅读(34000) <a href="#Post">评论(2)</a> &nbsp;<a href="http://www.cppblog.com/heath/admin/EditPosts.aspx?postid=103127">编辑</a>&nbsp;<a href="http://www.cppblog.com/heath/AddToFavorite.aspx?id=103127">收藏</a> <a href="http://www.cppblog.com/heath/services/trackbacks/103127.aspx">引用</a>  所属分类: <a href="http://www.cppblog.com/heath/category/8441.html">Graphics Programming</a> 
+		</p>
+	</div>
+	<img src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/103127.jfif" width="1" height="1">
+	
+<!--
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+<rdf:Description
+rdf:about="http://www.cppblog.com/heath/archive/2009/12/13/103127.html"
+dc:identifier="http://www.cppblog.com/heath/archive/2009/12/13/103127.html"
+dc:title="学习笔记—四元数与欧拉角之间的转换"
+trackback:ping="http://www.cppblog.com/heath/services/trackbacks/103127.aspx" />
+</rdf:RDF>
+-->
+
+<script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('AjaxHolder$scriptmanager1', document.getElementById('Form1'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls(['tAjaxHolder$UpdatePanel1'], [], [], 90);
+//]]>
+</script>
+
+<div id="AjaxHolder_UpdatePanel1">
+	    
+    <a name="pagedcomment"></a>
+
+<div id="comments">
+<h3>Feedback</h3>
+	
+	
+			<h4>
+				<a title="permalink: re: 学习笔记—四元数与欧拉角之间的转换" href="http://www.cppblog.com/heath/archive/2009/12/13/103127.html#117426">#</a>&nbsp;<a name="117426"></a>re: 学习笔记—四元数与欧拉角之间的转换
+					<span>
+						2010-06-08 22:30
+					</span>
+				<a id="AjaxHolder_Comments_CommentList_ctl00_NameLink" href="http://www.zhaiduo.com/" target="_blank">zhaiduo</a>
+			</h4>
+			<p>
+				受教，受教～&nbsp;&nbsp;<a onclick='return SetReplyAuhor("zhaiduo")' href="http://www.cppblog.com/heath/archive/2009/12/13/103127.html#post">回复</a>&nbsp;&nbsp;<a title="查看该作者发表过的评论" href="http://www.cppblog.com/comment?author=zhaiduo" target="_blank">更多评论</a>
+				<a id="AjaxHolder_Comments_CommentList_ctl00_DeleteLink" href="javascript:__doPostBack('AjaxHolder$Comments$CommentList$ctl00$DeleteLink','')"></a>&nbsp;&nbsp;<a id="AjaxHolder_Comments_CommentList_ctl00_EditLink"></a>
+			</p>
+		
+			<h4>
+				<a title="permalink: re: 学习笔记—四元数与欧拉角之间的转换" href="http://www.cppblog.com/heath/archive/2009/12/13/103127.html#193387">#</a>&nbsp;<a name="193387"></a>re: 学习笔记—四元数与欧拉角之间的转换<a name="Post"></a>
+					<span>
+						2012-10-16 22:12
+					</span>
+				<a id="AjaxHolder_Comments_CommentList_ctl01_NameLink" href="http://singmelody.com/" target="_blank">小马甲</a>
+			</h4>
+			<p>
+				厉害呀 受教&nbsp;&nbsp;<a onclick='return SetReplyAuhor("小马甲")' href="http://www.cppblog.com/heath/archive/2009/12/13/103127.html#post">回复</a>&nbsp;&nbsp;<a title="查看该作者发表过的评论" href="http://www.cppblog.com/comment?author=%e5%b0%8f%e9%a9%ac%e7%94%b2" target="_blank">更多评论</a>
+				<a id="AjaxHolder_Comments_CommentList_ctl01_DeleteLink" href="javascript:__doPostBack('AjaxHolder$Comments$CommentList$ctl01$DeleteLink','')"></a>&nbsp;&nbsp;<a id="AjaxHolder_Comments_CommentList_ctl01_EditLink"></a>
+			</p>
+		
+</div><div id="AjaxHolder_Comments_divRefreshComments" style="text-align:right;margin-right:10px;margin-bottom:5px;font-size:12px;"><a id="AjaxHolder_Comments_refreshList" href="javascript:__doPostBack('AjaxHolder$Comments$refreshList','')">刷新评论列表</a></div>
+<style>
+td { font-size: 12px }
+.commentTextBox 
+{ 
+    font-family : Verdana; 
+    font-size: 13px;
+ }
+</style>
+<!--Beging Temp Save-->
+<style>.userData { BEHAVIOR: url(#default#userdata) }
+	</style>
+<div class="userData" id="CommentsPersistDiv"></div>
+<script type="text/javascript">
+function pageLoad()
+{
+    Sys.WebForms.PageRequestManager.getInstance().add_initializeRequest(handleInitializeRequest);
+    //Sys.WebForms.PageRequestManager.getInstance().add_endRequest(handleEndRequest);
+}
+
+function handleInitializeRequest(sender, args)
+{
+    var prm = Sys.WebForms.PageRequestManager.getInstance();
+    var eid = args.get_postBackElement().id;
+    if (eid.indexOf("DeleteLink")>0) 
+    {
+       args.get_postBackElement().innerHTML = "<font color='red'>正在删除...</font>";         
+    }    
+    if (eid.indexOf("btnSubmit")>0) 
+    {
+       document.getElementById("AjaxHolder_PostComment_ltSubmitMsg").innerHTML="正在提交...";
+       document.getElementById("AjaxHolder_PostComment_btnSubmit").disabled = true;
+       
+    }    
+   
+}	
+
+function TempSave(ElementID)
+{
+	try
+	{
+	CommentsPersistDiv.setAttribute("CommentContent",document.getElementById(ElementID).value);
+	CommentsPersistDiv.save("CommentXMLStore");
+	}
+	catch(ex)
+	{
+	}
+	
+}
+function Restore(ElementID)
+{
+	CommentsPersistDiv.load("CommentXMLStore");
+	document.getElementById(ElementID).value=CommentsPersistDiv.getAttribute("CommentContent");
+}	
+			
+			
+</script>
+<!--Ene TempSave-->
+<div class="commentform">
+<span id="AjaxHolder_PostComment_ltSubmitMsg" style="color:Red;"></span>
+<br>
+<a name="Feedback"></a>
+	<table cellspacing="1" cellpadding="1" border="0">
+		
+		<tbody><tr><td colspan="3">只有注册用户<a href="http://www.cppblog.com/login.aspx?ReturnUrl=/heath/archive/2009/12/13/103127.html">登录</a>后才能发表评论。</td></tr>
+		<tr>
+		<td colspan="3" style="line-height:2.5">
+		<a href="http://www.ucancode.com/index.htm" target="_blank">【推荐】超50万行VC++源码: 大型组态工控、电力仿真CAD与GIS源码库</a><br>
+		<script type="text/javascript">
+		(function() {
+		var useSSL = 'https:' == document.location.protocol;
+		var src = (useSSL ? 'https:' : 'http:') +
+		'//www.googletagservices.com/tag/js/gpt.js';
+		document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+		})();
+		</script><script src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/gpt.js"></script><script id="gpt-impl-0.6012694170459908" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/pubads_impl_246.js"></script><script src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/integrator.js"></script><script>processGoogleTokenSync({"newToken":"FBS"},5);</script>
+
+		<script type="text/javascript">
+		googletag.defineSlot('/1090369/cppblog_blogpost_bottom', [300, 250], 'div-gpt-ad-1391948236744-0').addService(googletag.pubads());
+		googletag.pubads().enableSyncRendering();
+		googletag.pubads().enableSingleRequest();
+		googletag.enableServices();
+		</script>
+		
+		<!-- cppblog_blogpost_bottom -->
+		<div id="div-gpt-ad-1391948236744-0" style="width:300px; height:250px;" data-google-query-id="CJf1_oiTwd0CFQ06lgodI0kI2g">
+		<script type="text/javascript">
+		googletag.display('div-gpt-ad-1391948236744-0');
+		</script><script type="text/javascript" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/ads" id="sae-script-1"></script><script type="text/javascript" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/pubads_impl_rendering_246.js" id="gpt_rendering"></script><div id="div-gpt-ad-1391948236744-0_ad_container">
+<ins style="width: 300px; height: 250px; display: inline-table; position: relative; border: 0px none; vertical-align: bottom;"><ins style="width: 300px; height: 250px; display: block; position: relative; border: 0px none;"><iframe id="google_ads_iframe_/1090369/cppblog_blogpost_bottom_0" title="3rd party ad content" name="google_ads_iframe_/1090369/cppblog_blogpost_bottom_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; position: absolute; top: 0px; left: 0px;" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></ins></ins></div>
+<script>googletag.impl.pubads.createDomIframe("div-gpt-ad-1391948236744-0_ad_container" ,"/1090369/cppblog_blogpost_bottom_0",false,false);</script>
+		</div>
+		</td>
+		</tr>
+		<tr>			
+		<td colspan="3">
+		
+		</td>
+		</tr>
+		<tr>
+			<td colspan="3" height="5">
+<div id="divRelativePosts">
+相关文章:
+	
+			<ul style="margin-top:0px;line-height:1.8;">
+		
+			<li style="list-style:none;">
+				<a id="AjaxHolder_PostComment_ctl07_RelativePostsList_ctl01_Hyperlink1" href="http://www.cppblog.com/heath/archive/2016/02/05/212793.html">Font Outline in Unity</a>
+			</li>
+		
+			<li style="list-style:none;">
+				<a id="AjaxHolder_PostComment_ctl07_RelativePostsList_ctl02_Hyperlink1" href="http://www.cppblog.com/heath/archive/2012/11/27/195748.html">针对CUDA的GPU架构知识与性能对比</a>
+			</li>
+		
+			<li style="list-style:none;">
+				<a id="AjaxHolder_PostComment_ctl07_RelativePostsList_ctl03_Hyperlink1" href="http://www.cppblog.com/heath/archive/2010/03/10/109392.html">写着玩(1)——地形编辑</a>
+			</li>
+		
+			<li style="list-style:none;display:none">
+				<a id="AjaxHolder_PostComment_ctl07_RelativePostsList_ctl04_Hyperlink1" href="http://www.cppblog.com/heath/archive/2009/12/13/103127.html">学习笔记—四元数与欧拉角之间的转换</a>
+			</li>
+		
+			<li style="list-style:none;">
+				<a id="AjaxHolder_PostComment_ctl07_RelativePostsList_ctl05_Hyperlink1" href="http://www.cppblog.com/heath/archive/2009/11/03/100027.html">PBRT 2.0</a>
+			</li>
+		
+			<li style="list-style:none;">
+				<a id="AjaxHolder_PostComment_ctl07_RelativePostsList_ctl06_Hyperlink1" href="http://www.cppblog.com/heath/archive/2008/12/06/68723.html">Generate Realistic Water based on multiple Normal maps</a>
+			</li>
+		
+			<li style="list-style:none;">
+				<a id="AjaxHolder_PostComment_ctl07_RelativePostsList_ctl07_Hyperlink1" href="http://www.cppblog.com/heath/archive/2008/10/11/63739.html">描边</a>
+			</li>
+		
+			<li style="list-style:none;">
+				<a id="AjaxHolder_PostComment_ctl07_RelativePostsList_ctl08_Hyperlink1" href="http://www.cppblog.com/heath/archive/2008/10/09/63530.html">Fresnel Effect</a>
+			</li>
+		
+			<li style="list-style:none;">
+				<a id="AjaxHolder_PostComment_ctl07_RelativePostsList_ctl09_Hyperlink1" href="http://www.cppblog.com/heath/archive/2008/10/08/63488.html">材质的可视化编辑</a>
+			</li>
+		
+			</ul>
+		
+</div>
+</td>
+		</tr>
+		<tr>
+			<td colspan="3"></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="1"><div id="blogsite">网站导航:
+			<a href="http://www.cnblogs.com/">博客园</a>&nbsp;&nbsp;
+			<a href="https://news.cnblogs.com/">IT新闻</a>&nbsp;&nbsp;
+			<a href="http://www.blogjava.net/">BlogJava</a>&nbsp;&nbsp;
+			<a href="http://kb.cnblogs.com/">知识库</a>&nbsp;&nbsp;
+			<a href="https://q.cnblogs.com/">博问</a>&nbsp;&nbsp;
+			<a href="http://www.cppblog.com/heath/archive/2009/12/13/103127.html?opt=admin">管理</a>
+			</div></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				
+<br>
+
+<br>
+
+</td>
+		</tr>
+	</tbody></table>	
+</div>
+<div id="AjaxHolder_PostComment_ValidationSummary1" style="color:Red;display:none;">
+
+	</div>
+
+</div>
+
+				
+</div>
+
+<div id="leftmenu" style="display: inline;">
+
+	
+<h3>导航</h3>
+<ul>
+			<li><a id="MyLinks1_HomeLink" href="http://www.cppblog.com/">C++博客</a></li>
+			<li><a id="MyLinks1_MyHomeLink" href="http://www.cppblog.com/heath/">首页</a></li>
+			<li><a id="MyLinks1_ContactLink" accesskey="9" href="http://www.cppblog.com/heath/contact.aspx?id=1">联系</a></li>
+			<li><a id="MyLinks1_Syndication" href="http://www.cppblog.com/heath/Rss.aspx">聚合</a> <a id="MyLinks1_XMLLink" href="http://www.cppblog.com/heath/Rss.aspx"><img src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/xml.gif" style="border-width:0px;"></a>
+			</li><li><a id="MyLinks1_Admin" href="http://www.cppblog.com/heath/admin/EditPosts.aspx">管理</a></li>
+</ul>
+	
+	
+<h3>News</h3>
+	<ul>
+	  <li><center><img src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/r_rtr.jfif" alt="Focus on Real-time Rendering"></center></li>
+	</ul>
+
+	
+<h3>常用链接</h3>
+<ul>
+		<li><a id="SingleColumn1_ctl00_repeaterLinks_ctl01_lnkLinkItem" href="http://www.cppblog.com/heath/MyPosts.html">我的随笔</a></li>
+	
+		<li><a id="SingleColumn1_ctl00_repeaterLinks_ctl02_lnkLinkItem" href="http://www.cppblog.com/heath/MyComments.html">我的评论</a></li>
+	
+		<li><a id="SingleColumn1_ctl00_repeaterLinks_ctl03_lnkLinkItem" href="http://www.cppblog.com/heath/OtherPosts.html">我参与的随笔</a></li>
+	</ul>
+<h3>留言簿<span style="font-size:11px;font-weight:normal;">(23)</span></h3>
+<ul>
+	<li>
+		<a id="SingleColumn1__1d581e4_lnkMessages" href="http://www.cppblog.com/heath/Contact.aspx?id=1">给我留言</a>
+	</li><li>
+		<a id="SingleColumn1__1d581e4_lnkPublicMsgView" href="http://www.cppblog.com/heath/default.aspx?opt=msg">查看公开留言</a>
+	</li><li>
+		<a id="SingleColumn1__1d581e4_lnkPrivateMsgView" href="http://www.cppblog.com/heath/admin/MyMessages.aspx">查看私人留言</a>
+	</li>
+</ul>
+
+		<h3>随笔分类</h3>
+		
+				<ul>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl01_Link" href="http://www.cppblog.com/heath/category/18147.html">Arduino(2)</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl01_RssLink" title="Subscribe to Arduino(2)" href="http://www.cppblog.com/heath/category/18147.html/rss">(RSS)</a> </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl02_Link" href="http://www.cppblog.com/heath/category/10530.html">BlackBerry(2)</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl02_RssLink" title="Subscribe to BlackBerry(2)" href="http://www.cppblog.com/heath/category/10530.html/rss">(RSS)</a> </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl03_Link" href="http://www.cppblog.com/heath/category/10986.html">Game Development(23)</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl03_RssLink" title="Subscribe to Game Development(23)" href="http://www.cppblog.com/heath/category/10986.html/rss">(RSS)</a> </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl04_Link" href="http://www.cppblog.com/heath/category/8441.html">Graphics Programming(9)</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl04_RssLink" title="Subscribe to Graphics Programming(9)" href="http://www.cppblog.com/heath/category/8441.html/rss">(RSS)</a> </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl05_Link" href="http://www.cppblog.com/heath/category/9406.html">Network(1)</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl05_RssLink" title="Subscribe to Network(1)" href="http://www.cppblog.com/heath/category/9406.html/rss">(RSS)</a> </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl06_Link" href="http://www.cppblog.com/heath/category/19979.html">Photography</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl06_RssLink" title="Subscribe to Photography" href="http://www.cppblog.com/heath/category/19979.html/rss">(RSS)</a> </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl07_Link" href="http://www.cppblog.com/heath/category/7774.html">Programming Language(3)</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl07_RssLink" title="Subscribe to Programming Language(3)" href="http://www.cppblog.com/heath/category/7774.html/rss">(RSS)</a> </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl08_Link" href="http://www.cppblog.com/heath/category/15727.html">PS3 Hacks(2)</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl08_RssLink" title="Subscribe to PS3 Hacks(2)" href="http://www.cppblog.com/heath/category/15727.html/rss">(RSS)</a> </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl09_Link" href="http://www.cppblog.com/heath/category/6696.html">Script Programming(5)</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl09_RssLink" title="Subscribe to Script Programming(5)" href="http://www.cppblog.com/heath/category/6696.html/rss">(RSS)</a> </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl10_Link" href="http://www.cppblog.com/heath/category/8908.html">Studying(22)</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl10_RssLink" title="Subscribe to Studying(22)" href="http://www.cppblog.com/heath/category/8908.html/rss">(RSS)</a> </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl11_Link" href="http://www.cppblog.com/heath/category/18142.html">Wireless Hacking(3)</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl11_RssLink" title="Subscribe to Wireless Hacking(3)" href="http://www.cppblog.com/heath/category/18142.html/rss">(RSS)</a> </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl12_Link" href="http://www.cppblog.com/heath/category/20225.html">XBOX Hacking(2)</a> <a id="SingleColumn1_Categories_CatList_ctl00_LinkList_ctl12_RssLink" title="Subscribe to XBOX Hacking(2)" href="http://www.cppblog.com/heath/category/20225.html/rss">(RSS)</a> </li>
+			
+				</ul>
+			
+	
+		<h3>随笔档案</h3>
+		
+				<ul>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl01_Link" href="http://www.cppblog.com/heath/archive/2016/06.html">2016年6月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl02_Link" href="http://www.cppblog.com/heath/archive/2016/03.html">2016年3月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl03_Link" href="http://www.cppblog.com/heath/archive/2016/02.html">2016年2月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl04_Link" href="http://www.cppblog.com/heath/archive/2013/10.html">2013年10月 (2)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl05_Link" href="http://www.cppblog.com/heath/archive/2013/06.html">2013年6月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl06_Link" href="http://www.cppblog.com/heath/archive/2013/05.html">2013年5月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl07_Link" href="http://www.cppblog.com/heath/archive/2013/02.html">2013年2月 (2)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl08_Link" href="http://www.cppblog.com/heath/archive/2012/11.html">2012年11月 (4)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl09_Link" href="http://www.cppblog.com/heath/archive/2012/09.html">2012年9月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl10_Link" href="http://www.cppblog.com/heath/archive/2012/06.html">2012年6月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl11_Link" href="http://www.cppblog.com/heath/archive/2012/03.html">2012年3月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl12_Link" href="http://www.cppblog.com/heath/archive/2012/02.html">2012年2月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl13_Link" href="http://www.cppblog.com/heath/archive/2012/01.html">2012年1月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl14_Link" href="http://www.cppblog.com/heath/archive/2011/11.html">2011年11月 (4)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl15_Link" href="http://www.cppblog.com/heath/archive/2011/08.html">2011年8月 (2)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl16_Link" href="http://www.cppblog.com/heath/archive/2011/07.html">2011年7月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl17_Link" href="http://www.cppblog.com/heath/archive/2011/03.html">2011年3月 (3)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl18_Link" href="http://www.cppblog.com/heath/archive/2011/01.html">2011年1月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl19_Link" href="http://www.cppblog.com/heath/archive/2010/12.html">2010年12月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl20_Link" href="http://www.cppblog.com/heath/archive/2010/11.html">2010年11月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl21_Link" href="http://www.cppblog.com/heath/archive/2010/09.html">2010年9月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl22_Link" href="http://www.cppblog.com/heath/archive/2010/08.html">2010年8月 (2)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl23_Link" href="http://www.cppblog.com/heath/archive/2010/07.html">2010年7月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl24_Link" href="http://www.cppblog.com/heath/archive/2010/05.html">2010年5月 (2)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl25_Link" href="http://www.cppblog.com/heath/archive/2010/04.html">2010年4月 (2)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl26_Link" href="http://www.cppblog.com/heath/archive/2010/03.html">2010年3月 (3)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl27_Link" href="http://www.cppblog.com/heath/archive/2010/01.html">2010年1月 (3)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl28_Link" href="http://www.cppblog.com/heath/archive/2009/12.html">2009年12月 (3)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl29_Link" href="http://www.cppblog.com/heath/archive/2009/11.html">2009年11月 (3)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl30_Link" href="http://www.cppblog.com/heath/archive/2009/10.html">2009年10月 (2)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl31_Link" href="http://www.cppblog.com/heath/archive/2009/08.html">2009年8月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl32_Link" href="http://www.cppblog.com/heath/archive/2009/07.html">2009年7月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl33_Link" href="http://www.cppblog.com/heath/archive/2009/06.html">2009年6月 (4)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl34_Link" href="http://www.cppblog.com/heath/archive/2009/05.html">2009年5月 (3)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl35_Link" href="http://www.cppblog.com/heath/archive/2009/04.html">2009年4月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl36_Link" href="http://www.cppblog.com/heath/archive/2009/01.html">2009年1月 (2)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl37_Link" href="http://www.cppblog.com/heath/archive/2008/12.html">2008年12月 (1)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl38_Link" href="http://www.cppblog.com/heath/archive/2008/11.html">2008年11月 (2)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl39_Link" href="http://www.cppblog.com/heath/archive/2008/10.html">2008年10月 (3)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl01_LinkList_ctl40_Link" href="http://www.cppblog.com/heath/archive/2008/08.html">2008年8月 (1)</a>  </li>
+			
+				</ul>
+			
+	
+		<h3>好书推荐</h3>
+		
+				<ul>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl01_Link" href="http://www.amazon.com/Computer-Graphics-OpenGL-Donald-Hearn/dp/0130153907/ref=pd_bbs_sr_1?ie=UTF8&amp;s=books&amp;qid=1223459783&amp;sr=1-1" target="_blank">Computer Graphics with OpenGL (3rd Edition)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl02_Link" href="http://www.amazon.com/Game-Engine-Architecture-Jason-Gregory/dp/1568814135/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1263831135&amp;sr=8-1" target="_blank">Game Engine Architecture</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl03_Link" href="http://www.amazon.com/Hackers-Painters-Big-Ideas-Computer/dp/1449389554/ref=sr_1_1?ie=UTF8&amp;qid=1311412302&amp;sr=8-1">Hackers and Painters - Big Ideas from the Computer Age</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl04_Link" href="http://www.amazon.com/Head-First-Design-Patterns/dp/0596007124/sr=8-1/qid=1157808140/ref=pd_bbs_1/104-2529858-9634360?ie=UTF8&amp;s=books" target="_blank">Head First Design Patterns</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl05_Link" href="http://www.amazon.com/exec/obidos/tg/detail/-/012553180X/ref=ord_cart_shr?%5Fencoding=UTF8&amp;m=ATVPDKIKX0DER&amp;v=glance" target="_blank">PBRT</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl06_Link" href="http://www.amazon.com/Pragmatic-Thinking-Learning-Refactor-Programmers/dp/1934356050/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1256659337&amp;sr=8-1" target="_blank">Pragmatic Thinking and Learning: Refactor Your Wetware</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl07_Link" href="http://www.amazon.com/Real-Time-Rendering-Third-Tomas-Akenine-Moller/dp/1568814240/ref=pd_sim_b_5" target="_blank">Real-Time Rendering, Third Edition</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl08_Link" href="http://www.amazon.com/C-Programming-Language-Special-3rd/dp/0201700735/ref=pd_bbs_sr_1?ie=UTF8&amp;s=books&amp;qid=1223459835&amp;sr=1-1" target="_blank">The C++ Programming Language(Special Edition)</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl09_Link" href="http://www.amazon.com/Cg-Tutorial-Definitive-Programmable-Real-Time/dp/0321194969/ref=pd_bbs_sr_1?ie=UTF8&amp;s=books&amp;qid=1223459589&amp;sr=8-1" target="_blank">The Cg Tutorial</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl10_Link" href="http://www.wintellect.com/BookInformation.aspx?ASIN=0735624240" target="_blank">Windows via C/C++ [Fifth Edition]</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl11_Link" href="http://www.amazon.cn/mn/detailApp/ref=sr_1_1?_encoding=UTF8&amp;s=books&amp;qid=1256659460&amp;asin=B0011ALW1Y&amp;sr=8-1" target="_blank">程序员修炼之道：从小工到专家</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl12_Link" href="http://www.amazon.cn/mn/detailApp?qid=1242118623&amp;ref=SR&amp;sr=13-1&amp;uid=479-9242263-8136465&amp;prodid=bkbk831097" target="_blank">学习的艺术</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl13_Link" href="http://www.amazon.cn/mn/detailApp?qid=1242118685&amp;ref=SR&amp;sr=13-1&amp;uid=479-9242263-8136465&amp;prodid=zjbk347871" target="_blank">影响力</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl02_LinkList_ctl14_Link" href="http://www.amazon.cn/detail/product.asp?uid=479-9242263-8136465&amp;prodid=bkbk713078&amp;ref=SC_SL" target="_blank">雨林中的欧几里德</a>  </li>
+			
+				</ul>
+			
+	
+		<h3>好友</h3>
+		
+				<ul>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl03_LinkList_ctl01_Link" href="http://www.fseraph.com/" target="_blank">fseraph</a>  </li>
+			
+				</ul>
+			
+	
+		<h3>联系我</h3>
+		
+				<ul>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl04_LinkList_ctl01_Link" href="http://gmail.com/" target="_blank">heath.luo@gmail.com</a>  </li>
+			
+				</ul>
+			
+	
+		<h3>摄影</h3>
+		
+				<ul>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl05_LinkList_ctl01_Link" href="http://www.flickr.com/pentaxtinyeye/" target="_blank">PentaxTinyEye</a>  </li>
+			
+				</ul>
+			
+	
+		<h3>资讯网站</h3>
+		
+				<ul>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl06_LinkList_ctl01_Link" href="http://www.engadget.com/" target="_blank">Engadget</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl06_LinkList_ctl02_Link" href="http://www.extremetech.com/" target="_blank">ExtremeTech</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl06_LinkList_ctl03_Link" href="http://www.gamasutra.com/" target="_blank">gamasutra</a>  </li>
+			
+				<li><a id="SingleColumn1_Categories_CatList_ctl06_LinkList_ctl04_Link" href="http://realtimerendering.com/portal.html" target="_blank">RealtimeRendering</a>  </li>
+			
+				</ul>
+			
+	
+
+
+<script language="JavaScript">
+function SearchGoogle(key,evt,site)
+		{
+			if(evt.keyCode==13 || evt.keyCode==0 || evt.type =='click')
+			{
+				key.focus();
+				var keystr = encodeURIComponent(key.value);
+				url = "http://www.google.com/search?q=";
+				url = url+keystr;
+				url += "&ie=UTF-8&oe=GB2312&hl=zh-CN&domains="+site+"&sitesearch="+site;
+				window.location=url;
+				return false;
+			}
+		}
+</script>
+<h3>搜索</h3>
+<ul>
+	<li>
+		</li><li><input style="WIDTH: 130px" name="q" id="q" onkeydown="return SearchGoogle(document.getElementById('q'),event,'www.cppblog.com/heath')" type="text">&nbsp;<input onclick="SearchGoogle(document.getElementById('q'),event,'www.cppblog.com/heath')" value="搜索" name="sa" type="button">
+	</li>
+</ul>
+
+<h3>积分与排名</h3>
+<ul>
+	<li>
+		积分 -
+		196834
+	</li><li>
+		排名 -
+		102
+	</li>
+</ul>
+
+<h3>最新评论
+	<a id="SingleColumn1__611b18_RSSHyperlink1" href="http://www.cppblog.com/heath/CommentsRSS.aspx"><img src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/xml.gif" style="border-width:0px;"></a></h3>
+<div class="RecentComment">
+	
+			<ul>
+		
+			<li style="word-break:break-all">
+				<a id="SingleColumn1__611b18_CommentList_ctl01_Hyperlink1" href="http://www.cppblog.com/heath/archive/2016/08/02/213777.html#214096">1.&nbsp;re: 解决在Unity中封装Debug.Log后代码行定位问题[未登录]</a>
+			</li>
+			<li style="word-break:break-all">
+				这边环境是Unity4.7.2 + VS2013 + UnityVS@Walker<br>
+			</li>
+			<li style="text-align:right;margin-right:4px">
+				--Walker</li>
+		
+			<li style="word-break:break-all">
+				<a id="SingleColumn1__611b18_CommentList_ctl02_Hyperlink1" href="http://www.cppblog.com/heath/archive/2016/08/02/213777.html#214094">2.&nbsp;re: 解决在Unity中封装Debug.Log后代码行定位问题[未登录]</a>
+			</li>
+			<li style="word-break:break-all">
+				这种方法在使用UnityVS的时候不起作用。。。
+			</li>
+			<li style="text-align:right;margin-right:4px">
+				--Walker</li>
+		
+			<li style="word-break:break-all">
+				<a id="SingleColumn1__611b18_CommentList_ctl03_Hyperlink1" href="http://www.cppblog.com/heath/archive/2016/06/23/213777.html#213794">3.&nbsp;re: 解决在Unity中封装Debug.Log后代码行定位问题</a>
+			</li>
+			<li style="word-break:break-all">
+				好方法~~
+			</li>
+			<li style="text-align:right;margin-right:4px">
+				--林风</li>
+		
+			<li style="word-break:break-all">
+				<a id="SingleColumn1__611b18_CommentList_ctl04_Hyperlink1" href="http://www.cppblog.com/heath/archive/2014/10/30/133692.html#208730">4.&nbsp;re: Windows下Perforce Command Line处理中文参数的两种方法[未登录]</a>
+			</li>
+			<li style="word-break:break-all">
+				@xiami<br>Yes<br>
+			</li>
+			<li style="text-align:right;margin-right:4px">
+				--Heath</li>
+		
+			<li style="word-break:break-all">
+				<a id="SingleColumn1__611b18_CommentList_ctl05_Hyperlink1" href="http://www.cppblog.com/heath/archive/2014/10/29/133692.html#208716">5.&nbsp;re: Windows下Perforce Command Line处理中文参数的两种方法</a>
+			</li>
+			<li style="word-break:break-all">
+				perforce 支持中文命名吗？
+			</li>
+			<li style="text-align:right;margin-right:4px">
+				--xiami</li>
+		
+			</ul>
+		
+</div>
+
+<h3>评论排行榜</h3>
+<div class="RecentComment">
+	
+			<ul style="word-break:break-all">
+		
+			<li>
+				<a id="SingleColumn1__2ab07f5_TopList_ctl01_Hyperlink1" href="http://www.cppblog.com/heath/archive/2009/07/29/91645.aspx">1.&nbsp;邪恶的Windows(24)</a>
+			</li>
+		
+			<li>
+				<a id="SingleColumn1__2ab07f5_TopList_ctl02_Hyperlink1" href="http://www.cppblog.com/heath/archive/2009/11/03/100027.aspx">2.&nbsp;PBRT 2.0(18)</a>
+			</li>
+		
+			<li>
+				<a id="SingleColumn1__2ab07f5_TopList_ctl03_Hyperlink1" href="http://www.cppblog.com/heath/archive/2012/01/08/163832.aspx">3.&nbsp;Playing with Proxmark(11)</a>
+			</li>
+		
+			<li>
+				<a id="SingleColumn1__2ab07f5_TopList_ctl04_Hyperlink1" href="http://www.cppblog.com/heath/archive/2010/11/15/133692.aspx">4.&nbsp;Windows下Perforce Command Line处理中文参数的两种方法(7)</a>
+			</li>
+		
+			<li>
+				<a id="SingleColumn1__2ab07f5_TopList_ctl05_Hyperlink1" href="http://www.cppblog.com/heath/archive/2010/09/05/125961.aspx">5.&nbsp;"Inception" 简评(7)</a>
+			</li>
+		
+			</ul>
+		
+</div>
+
+<ul><li>
+<div id="cnblogsgooglead" width="180" height="150">
+<script type="text/javascript"><!--
+google_ad_client = "pub-4210569241504288";
+google_ad_width = 180;
+google_ad_height = 150;
+google_ad_format = "180x150_as";
+google_ad_channel ="";
+google_ad_type = "text";
+//--></script>
+<script type="text/javascript" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/show_ads.js">
+</script><ins id="aswift_0_expand" style="display:inline-table;border:none;height:150px;margin:0;padding:0;position:relative;visibility:visible;width:180px;background-color:transparent;"><ins id="aswift_0_anchor" style="display:block;border:none;height:150px;margin:0;padding:0;position:relative;visibility:visible;width:180px;background-color:transparent;"><iframe marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){setTimeout(h,0)}else if(h.match){try{h=s.upd(h,i)}catch(e){}w.location.replace(h)}}" id="aswift_0" name="aswift_0" style="left:0;position:absolute;top:0;width:180px;height:150px;" width="180" height="150" frameborder="0"></iframe></ins></ins>
+</div>
+<div id="cnblogsgoogleadcode" style="display:none"></div>
+</li></ul>
+
+
+</div>
+
+
+
+
+<p id="footer">
+	Powered by: 
+	<br>
+	
+	<a id="Footer1_Hyperlink3" name="Hyperlink1" href="http://www.cppblog.com/" style="font-family:Verdana;font-size:12px;">C++博客</a>
+	<br>
+	Copyright © Heath
+</p>    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("AjaxHolder_PostComment_ValidationSummary1"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var AjaxHolder_PostComment_ValidationSummary1 = document.all ? document.all["AjaxHolder_PostComment_ValidationSummary1"] : document.getElementById("AjaxHolder_PostComment_ValidationSummary1");
+AjaxHolder_PostComment_ValidationSummary1.showmessagebox = "True";
+AjaxHolder_PostComment_ValidationSummary1.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+document.getElementById('AjaxHolder_PostComment_ValidationSummary1').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('AjaxHolder_PostComment_ValidationSummary1'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+	<script type="text/javascript" src="%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E8%A7%92%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%20-%20Heath's%20Blog%20-%20C++%E5%8D%9A%E5%AE%A2_files/ShowHidden.js"></script>   
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-476124-5']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+
+
+<iframe id="google_osd_static_frame_5485750134845" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;"></iframe></body></html>
